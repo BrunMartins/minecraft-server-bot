@@ -3,32 +3,24 @@ const logger = require('winston');
 const auth = require('./auth.json');
 const fs = require('fs');
 const prefix = '!';
-
-
-
-const possibleConfigKeys = [
-    'maxRam',
-    'minRam',
-    'restartOnError',
-]; 
-
-const possibleActions = [
-    'set',
-    'get',
-    'remove',
-    'reset'
-]
-
-const allowedValues = {
-    'maxRam': ['xG'],
-    'minRam': ['xG'],
-    'restartOnError': [true, false]
-};
+let config = "";
 
 const printHelpMessage = () => {
 
 }
 
+const readConfig = () => {
+    fs.readFile('./config.json', (err, json) => {
+        try {
+            config = JSON.parse(json);
+        } catch (error) {  
+            bot.sendMessage({
+                to: '583284103525433347',
+                message: "There occurred and error during bot startup: " + error
+            })
+        }
+    });
+}
 const onePerLine = (array = []) => {
     let str = '';
     
@@ -54,8 +46,10 @@ bot.on('ready', function (evt) {
     logger.info('Connected');
     logger.info('Logged in as: ');
     logger.info(bot.username + ' - (' + bot.id + ')');
+    readConfig();
 });
 bot.on('message', (user, userID, channelID, message, evt) => {
+    console.log(channelID);
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
     if (!message.startsWith(prefix) && user === 'Minecraft Server') return;
@@ -89,32 +83,17 @@ bot.on('message', (user, userID, channelID, message, evt) => {
                 case 'set':
                     if(key === 'maxRam') {
                         if (value.match(/[1-9][Gg]/)) {
-                            fs.readFile('./config.json', (err, json) => {
-                                console.log('heeeeeres johnny');
-                                if (err) return;
-                            
-                                try {
-                                    config = JSON.parse(json);
-                                    config.maxRam = value;
-                                    console.log("Saving config")
-                                    fs.truncateSync('./config.json', 0);
-                                    fs.writeFile('./config.json', JSON.stringify(config), (err) => {
-                                        if (err) {
-                                            console.error(err);
-                                            return;
-                                        }
-
-                                        console.log('Saved Config');
-                                    });
-                                } catch (err) {
-                                    console.log(err);
+                            fs.writeFile('./config.json', JSON.stringify(config), (err) => {
+                                if (err) {
+                                    console.error(err);
                                     return;
                                 }
-                            });
 
-                            
+                                console.log('Saved Config');
+                            });
                         }
                     }
+                    
                 case 'reset':
                     let defaults;
                     fs.readFile('./defaults.json', (err, defaults) => {

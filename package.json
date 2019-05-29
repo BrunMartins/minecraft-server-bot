@@ -2,10 +2,13 @@
     "name": "minecraft-server-bot",
     "version": "1.0.0",
     "description": "Start and stop the minecraft server",
-    "main": "bot.js",
+    "main": "index.js",
     "author": "Bruno Martins",
     "dependencies": {
         "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+        "discord.js": "^11.5.0",
+        "forever-monitor": "^1.7.1",
+        "npm-watch": "^0.6.0",
         "winston": "^3.2.1"
     }
 }
