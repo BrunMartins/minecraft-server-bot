@@ -12,6 +12,17 @@ module.exports = {
 
         return str;
     },
+    jsonObjOnePerLine(jsonObj) {
+        let str = '';
+
+        for(let key in jsonObj) {
+            if (jsonObj.hasOwnProperty(key)) {
+                str += key + ': ' + jsonObj[key] + "\n";
+            }
+        }
+
+        return str;
+    },
     isAdmin(message) {
         if (message.member.hasPermission("ADMINISTRATOR")) {
             return true;
@@ -32,11 +43,19 @@ module.exports = {
         'set',
         'get',
         'remove',
-        'reset'
+        'reset',
+        'backups',
+        'backup'
     ],
     allowedValues: {
         'maxRam': ['xG'],
         'minRam': ['xG'],
         'restartOnError': [true, false]
-    }
+    },
+    availableSubcommands: [
+        'ping',
+        'config',
+        'start',
+        
+    ]
 }
