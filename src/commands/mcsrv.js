@@ -1,7 +1,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const helpers = require('../helpers.js');
-const { botCentral, prefix } = require('../../config.json');
 
 module.exports = {
     name: 'mcsrv',
@@ -12,6 +11,8 @@ module.exports = {
         },
 
         config: (message, args, client) => {
+
+            const { botCentral, prefix } = require('../../config.json');
             let username = message.author.username;
             
             if(message.member.nickname !== null) {
@@ -322,5 +323,9 @@ module.exports = {
         status: (message, args, client) => {
 
         },
+
+        createLocalConfig: () => {
+            fs.copyFileSync('./defaults.json', './config.json');
+        }
     }
 }

@@ -1,9 +1,9 @@
 const Discord = require('discord.js');
 const auth = require('./auth.json');
 const logger = require('winston');
-let {prefix} = require('./config.json')
 const fs = require('fs');
 const helpers = require('./src/helpers.js');
+let prefix;
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
@@ -28,22 +28,30 @@ function updateConfig() {
 
 logger.level = 'debug';
 
-//Initialize client
+// Initialize client
 client.once('ready', () => {
     logger.info('Connected');
     logger.info('Logged in as: ');
     logger.info(client.user.username + ' - (' + client.user.id + ')');
+
+    // Get all the commands present in the commands folder
     const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.js'));
 
-    t = setInterval(() => {
-        if(client.uptime);
-    }, 300000)
-
+    // Iterate all the filenames and assign the commands in the client object
     for (const file of commandFiles) {
         const command = require(`./src/commands/${file}`);
         client.commands.set(command.name, command);
     }
 
+    // Check if it is the fist time the bot is being executed and create the local config if it is
+    if (fs.existsSync('./firstrun')) {
+        client.commands.get('mcsrv').commands.createLocalConfig();
+        fs.unlinkSync('./firstrun')
+        prefix = require('./config.json');
+    }
+    console.log(prefix);
+
+    // Get a list of sub commands available in the client object
     for(const subCommand in client.commands.get('mcsrv').commands){
         helpers.availableSubcommands.push(subCommand);
     }
