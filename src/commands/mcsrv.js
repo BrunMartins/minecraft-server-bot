@@ -11,8 +11,6 @@ module.exports = {
         },
 
         config: (message, args, client) => {
-
-            const { botCentral, prefix } = require('../../config.json');
             let username = message.author.username;
             
             if(message.member.nickname !== null) {
@@ -32,7 +30,7 @@ module.exports = {
 
                         if (err) {
                             message.channel.send('There was an error, please contact the bot administrator.');
-                            channel = client.channels.find(c => c.id === botCentral);
+                            channel = client.channels.find(c => c.id === helpers.config.botCentral);
                             channel.send(JSON.stringify(err));
                             return;
                         } 
@@ -41,12 +39,13 @@ module.exports = {
                         fs.writeFile('./config.json', defaults, (err) => {
                             if (err) {
                                 message.channel.send('There was an error, please contact the bot administrator.');
-                                channel = client.channels.find(c => c.id === botCentral);
+                                channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                 channel.send(JSON.stringify(err));
                                 return;
                             } 
 
                             message.channel.send('Successfully reset bot configurations.');
+                            helpers.loadConfig();
                         });
                     });
                     break;
@@ -73,7 +72,7 @@ module.exports = {
                         fs.unlink(file, (err) => {
                             if (err) {
                                 message.channel.send('There was an error, please contact the bot administrator.');
-                                channel = client.channels.find(c => c.id === botCentral);
+                                channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                 channel.send(JSON.stringify(err));
                                 return;
                             } 
@@ -111,7 +110,7 @@ module.exports = {
                     fs.readFile(file, (err, bak) => {
                         if (err) {
                             message.channel.send('There was an error, please contact the bot administrator.');
-                            channel = client.channels.find(c => c.id === botCentral);
+                            channel = client.channels.find(c => c.id === helpers.config.botCentral);
                             channel.send(JSON.stringify(err));
                             return;
                         } 
@@ -120,15 +119,16 @@ module.exports = {
                             fs.truncate('config.json', (error) => {
                                 if (err) {
                                     message.channel.send('There was an error, please contact the bot administrator.');
-                                    channel = client.channels.find(c => c.id === botCentral);
+                                    channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                     channel.send(JSON.stringify(err));
                                     return;
                                 }
                                 fs.writeFileSync('config.json', bak);
+                                helpers.loadConfig();
                             });
                         } catch(error2) {
                             message.channel.send('There was an error, please contact the bot administrator.');
-                            channel = client.channels.find(c => c.id === botCentral);
+                            channel = client.channels.find(c => c.id === helpers.config.botCentral);
                             channel.send(JSON.stringify(err));
                             return;
                         }
@@ -145,7 +145,7 @@ module.exports = {
                             fs.readFile('./config.json', (err, config) => {
                                 if (err) {
                                     message.channel.send('There was an error, please contact the bot administrator.');
-                                    channel = client.channels.find(c => c.id === botCentral);
+                                    channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                     channel.send(JSON.stringify(err));
                                     return;
                                 }
@@ -160,15 +160,17 @@ module.exports = {
                                     fs.truncate('./config.json', (err) => {
                                         if (err) {
                                             message.channel.send('There was an error, please contact the bot administrator.');
-                                            channel = client.channels.find(c => c.id === botCentral);
+                                            channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                             channel.send(JSON.stringify(err));
                                             return;
                                         }
                                         fs.writeFileSync('./config.json', JSON.stringify(config));
+                                        message.channel.send('Configuration value ' + args[1] + ' changed successfully to ' + args[2]);
+                                        helpers.loadConfig();
                                     }) 
                                 } catch (error) {
                                     message.channel.send('There was an error, please contact the bot administrator.');
-                                    channel = client.channels.find(c => c.id === botCentral);
+                                    channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                     channel.send(JSON.stringify(err));
                                     return;
                                 }  
@@ -179,7 +181,7 @@ module.exports = {
                             fs.readFile('./config.json', (err, config) => {
                                 if (err) {
                                     message.channel.send('There was an error, please contact the bot administrator.');
-                                    channel = client.channels.find(c => c.id === botCentral);
+                                    channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                     channel.send(JSON.stringify(err));
                                     return;
                                 }
@@ -195,15 +197,17 @@ module.exports = {
                                         // Check
                                         if (err) {
                                             message.channel.send('There was an error, please contact the bot administrator.');
-                                            channel = client.channels.find(c => c.id === botCentral);
+                                            channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                             channel.send(JSON.stringify(err));
                                             return;
                                         }
                                         fs.writeFileSync('./config.json', JSON.stringify(config));
+                                        message.channel.send('Configuration value ' + args[1] + ' changed successfully to ' + args[2]);
+                                        helpers.loadConfig();
                                     }) 
                                 } catch (error) {
                                     message.channel.send('There was an error, please contact the bot administrator.');
-                                    channel = client.channels.find(c => c.id === botCentral);
+                                    channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                     channel.send(JSON.stringify(err));
                                     return;
                                 }  
@@ -213,7 +217,7 @@ module.exports = {
                         fs.readFile('./config.json', (err, config) => {
                             if (err) {
                                 message.channel.send('There was an error, please contact the bot administrator.');
-                                channel = client.channels.find(c => c.id === botCentral);
+                                channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                 channel.send(JSON.stringify(err));
                                 return;
                             }
@@ -226,27 +230,28 @@ module.exports = {
                                 fs.truncate('./config.json', (err) => {
                                     if (err) {
                                         message.channel.send('There was an error, please contact the bot administrator.');
-                                        channel = client.channels.find(c => c.id === botCentral);
+                                        channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                         channel.send(JSON.stringify(err));
                                         return;
                                     }
                                     fs.writeFileSync('./config.json', JSON.stringify(config));
+                                    message.channel.send('Configuration value ' + args[1] + ' changed successfully to ' + args[2]);
+                                    helpers.loadConfig();
                                 }) 
                             } catch (error) {
                                 message.channel.send('There was an error, please contact the bot administrator.');
-                                channel = client.channels.find(c => c.id === botCentral);
+                                channel = client.channels.find(c => c.id === helpers.config.botCentral);
                                 channel.send(JSON.stringify(err));
                                 return; 
                             }  
                         });
                     }
-                    message.channel.send('Configuration value ' + args[1] + ' changed successfully to ' + args[2]);
                     
                     break;
                     
                 case 'backups':
                     const list = fs.readdirSync('./bak').filter(file => file.endsWith('.bak'));
-                    const embed = new Discord.RichEmbed().setTitle('Type "' + prefix + 'mcsrv config restore <ID>" to restore a specific backup.').setColor('#00FF00');
+                    const embed = new Discord.RichEmbed().setTitle('Type "' + helpers.config.prefix + 'mcsrv config restore <ID>" to restore a specific backup.').setColor('#00FF00');
                     const dates = [];
 
                     if (list.length < 1) {
@@ -261,7 +266,7 @@ module.exports = {
                         dates.push((index + 1) + ' => ' + dt);
                     });
                     embed.addField('Available configuration backup files:', helpers.onePerLine(dates) + "\nSee footer for more info.")
-                    .setFooter('type "' + prefix + 'mcsrv config restore <id>" with any of the represented ID numbers or "' + prefix + 'mcsrv config restore" to restore the latest configuration backup.');
+                    .setFooter('type "' + helpers.config.prefix + 'mcsrv config restore <id>" with any of the represented ID numbers or "' + helpers.config.prefix + 'mcsrv config restore" to restore the latest configuration backup.');
 
                     message.channel.send({embed: embed});
                     break;
@@ -271,7 +276,7 @@ module.exports = {
                     fs.readFile('./config.json', (err, jsonData) => {
                         if (err) {
                             message.channel.send('There was an error, please contact the bot administrator.');
-                            channel = client.channels.find(c => c.id === botCentral);
+                            channel = client.channels.find(c => c.id === helpers.config.botCentral);
                             channel.send(JSON.stringify(err));
                             return;
                         }
@@ -316,9 +321,9 @@ module.exports = {
         status: (message, args, client) => {
 
         },
+    },
 
-        createLocalConfig: () => {
-            fs.copyFileSync('./defaults.json', './config.json');
-        }
+    createLocalConfig() {
+        fs.copyFileSync('./defaults.json', './config.json');
     }
 }
