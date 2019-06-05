@@ -44,9 +44,8 @@ client.once('ready', () => {
     }
 
     // Check if it is the fist time the bot is being executed and create the local config if it is
-    if (fs.existsSync('./firstrun')) {
+    if (!fs.existsSync('./config.json')) {
         client.commands.get('mcsrv').commands.createLocalConfig();
-        fs.unlinkSync('./firstrun')
         prefix = require('./config.json');
     }
     console.log(prefix);
