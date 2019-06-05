@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const auth = require('./auth.json');
 const logger = require('winston');
-const {prefix} = require('./config.json')
+let {prefix} = require('./config.json')
 const fs = require('fs');
 
 const client = new Discord.Client();
@@ -12,6 +12,18 @@ logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, {
     colorize: true
 });
+
+function updateConfig() {
+    fs.readFile('./config.json', (err, config) => {
+        try {
+            config = JSON.parse(config);
+            prefix = config.prefix;
+        } catch (error) {
+            
+        }
+        
+    });
+}
 
 logger.level = 'debug';
 
@@ -37,15 +49,21 @@ client.login(auth.token);
 
 
 client.on('message', message => {
+    console.log(prefix)
 
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).split(/ +/);
+    console.log(args);
     let cmd = args.shift().toLowerCase();
-    cmd = client.commands.get(cmd) || client.commands.find(cmnd => cmnd.aliases && cmnd.aliases.includes(cmd));
+    console.log('Command: ', cmd);
+    cmd = client.commands.get(cmd) //|| client.commands.find(cmnd => cmnd.aliases && cmnd.aliases.includes(cmd));
     if (!cmd) {
         message.channel.send('Command ' + cmd + ' not found');
         return;
     }
-    cmd.execute(message, args);
+    cmd.execute(message, args, client);
+    t = setTimeout(() => {
+        updateConfig();
+    }, 2000);
 });

@@ -12,6 +12,17 @@ module.exports = {
 
         return str;
     },
+    isAdmin(message) {
+        if (message.member.hasPermission("ADMINISTRATOR")) {
+            return true;
+        }
+
+        if (message.member.roles.has('199588562411192320')) {
+            return true;
+        }
+
+        return false;
+    },
     possibleConfigKeys: [
         'maxRam',
         'minRam',

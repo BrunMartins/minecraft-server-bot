@@ -1,19 +1,38 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const helpers = require('../helpers.js');
+const { botCentral } = require('../../config.json');
 
 module.exports = {
     name: 'config',
     aliases: ['conf', 'configuration'],
-    execute(message, args) {
+    /**
+     * 
+     * Executes config commands
+     * 
+     * @param {*} message 
+     * @param {Array} args 
+     */
+    execute(message, args, client = null) {
+        
+        // Check if message author is administrator or moderator of the server
+        if(!helpers.isAdmin(message)) {
+            message.channel.send(':octagonal_sign: You are not an administrator and as such, can\'t change any of the configurations.');
+            return;
+        }
 
+        // Now we're going to choose the action to execute
         switch(args[0]) {
-            case 'reset':
+            case 'reset': 
                 // Read the defaults json file
                 fs.readFile('./defaults.json', (err, defaults) => {
+
+                    // Check
                     if (err) {
-                        console.log(err); 
-                        return;  
+                        message.channel.send('There was an error, please contact the bot administrator.');
+                        channel = client.channels.find(c => c.id === botCentral);
+                        channel.send(JSON.stringify(err));
+                        return;
                     } 
         
                     // Rewrite configs to defaults
@@ -22,6 +41,8 @@ module.exports = {
                             console.log(err); 
                             return;
                         } 
+
+                        message.channel.send('Successfully reset bot configurations.');
                     });
                 });
                 break;
@@ -84,6 +105,7 @@ module.exports = {
                             }
                             
                             try {
+                                config = JSON.parse(config);
                                 config.maxRam = args[2];
                                 fs.truncate('./config.json', (err) => {
 
@@ -96,7 +118,50 @@ module.exports = {
                             }  
                         });
                     }
-                }else 
+                } else if(args[1] === 'minRam') {
+                    if (args[2].match(/(^([5-9]{1})[0-9]{2,3}[Mm]$)|(^([1-9]{1})([0-9]{1})?[Gg]$)/)) {
+                        fs.readFile('./config.json', (err, config) => {
+                            if (err) {
+                                console.error(err);
+                                return;
+                            }
+                            
+                            try {
+                                config = JSON.parse(config);
+                                config.minRam = args[2];
+                                fs.truncate('./config.json', (err) => {
+
+                                    fs.writeFile('./config.json', JSON.stringify(config));
+                                    console.log('Saved Config');
+                                }) 
+                            } catch (error) {
+                               console.error(error);
+                               return; 
+                            }  
+                        });
+                    }
+                } else if(args[1] === 'prefix') {
+                    fs.readFile('./config.json', (err, config) => {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+                        
+                        try {
+                            
+                            config = JSON.parse(config);
+                            config.prefix = args[2];
+
+                            fs.truncate('./config.json', (err) => {
+                                fs.writeFileSync('./config.json', JSON.stringify(config));
+                                console.log('Saved Config');
+                            }) 
+                        } catch (error) {
+                            console.error(error);
+                            return; 
+                        }  
+                    });
+                }
                 
                 break;
                 
@@ -119,7 +184,7 @@ module.exports = {
                 embed.addField('Available configuration backup files:', helpers.onePerLine(dates) + "\nSee footer for more info.")
                 .setFooter('type "!config restore <id>" with any of the represented ID numbers or "!config restore" to restore the latest configuration backup.');
 
-                //message.channel.send({embed: embed});
+                message.channel.send({embed: embed});
                 break;
 
             default:
