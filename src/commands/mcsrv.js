@@ -30,7 +30,6 @@ module.exports = {
                     // Read the defaults json file
                     fs.readFile('./defaults.json', (err, defaults) => {
 
-                        // Check
                         if (err) {
                             message.channel.send('There was an error, please contact the bot administrator.');
                             channel = client.channels.find(c => c.id === botCentral);
@@ -40,7 +39,6 @@ module.exports = {
             
                         // Rewrite configs to defaults
                         fs.writeFile('./config.json', defaults, (err) => {
-                            // Check
                             if (err) {
                                 message.channel.send('There was an error, please contact the bot administrator.');
                                 channel = client.channels.find(c => c.id === botCentral);
@@ -55,6 +53,10 @@ module.exports = {
 
                 case 'backup':
 
+                    if(!fs.existsSync('../../bak')) {
+                        fs.mkdirSync('../../bak');
+                    }
+                    
                     if (args[1] === 'delete') {
                         if(args[2]) {
                             file = './bak/config.json-' + args[2] + '.bak';
@@ -69,7 +71,6 @@ module.exports = {
                         }
 
                         fs.unlink(file, (err) => {
-                            // Check
                             if (err) {
                                 message.channel.send('There was an error, please contact the bot administrator.');
                                 channel = client.channels.find(c => c.id === botCentral);
@@ -108,7 +109,6 @@ module.exports = {
                     }
 
                     fs.readFile(file, (err, bak) => {
-                        // Check
                         if (err) {
                             message.channel.send('There was an error, please contact the bot administrator.');
                             channel = client.channels.find(c => c.id === botCentral);
@@ -118,7 +118,6 @@ module.exports = {
 
                         try {
                             fs.truncate('config.json', (error) => {
-                                // Check
                                 if (err) {
                                     message.channel.send('There was an error, please contact the bot administrator.');
                                     channel = client.channels.find(c => c.id === botCentral);
@@ -144,7 +143,6 @@ module.exports = {
                     if(args[1] === 'maxRam') {
                         if (args[2].match(/(^([5-9]{1})[0-9]{2,3}[Mm]$)|(^([1-9]{1})([0-9]{1})?[Gg]$)/)) {
                             fs.readFile('./config.json', (err, config) => {
-                                // Check
                                 if (err) {
                                     message.channel.send('There was an error, please contact the bot administrator.');
                                     channel = client.channels.find(c => c.id === botCentral);
@@ -160,7 +158,6 @@ module.exports = {
                                     }
                                     config.maxRam = args[2];
                                     fs.truncate('./config.json', (err) => {
-                                        // Check
                                         if (err) {
                                             message.channel.send('There was an error, please contact the bot administrator.');
                                             channel = client.channels.find(c => c.id === botCentral);
@@ -180,7 +177,6 @@ module.exports = {
                     } else if(args[1] === 'minRam') {
                         if (args[2].match(/(^([5-9]{1})[0-9]{2,3}[Mm]$)|(^([1-9]{1})([0-9]{1})?[Gg]$)/)) {
                             fs.readFile('./config.json', (err, config) => {
-                                // Check
                                 if (err) {
                                     message.channel.send('There was an error, please contact the bot administrator.');
                                     channel = client.channels.find(c => c.id === botCentral);
@@ -215,7 +211,6 @@ module.exports = {
                         }
                     } else if(args[1] === 'prefix') {
                         fs.readFile('./config.json', (err, config) => {
-                            // Check
                             if (err) {
                                 message.channel.send('There was an error, please contact the bot administrator.');
                                 channel = client.channels.find(c => c.id === botCentral);
@@ -229,7 +224,6 @@ module.exports = {
                                 config.prefix = args[2];
 
                                 fs.truncate('./config.json', (err) => {
-                                    // Check
                                     if (err) {
                                         message.channel.send('There was an error, please contact the bot administrator.');
                                         channel = client.channels.find(c => c.id === botCentral);
@@ -275,7 +269,6 @@ module.exports = {
                 case 'get':
 
                     fs.readFile('./config.json', (err, jsonData) => {
-                        // Check
                         if (err) {
                             message.channel.send('There was an error, please contact the bot administrator.');
                             channel = client.channels.find(c => c.id === botCentral);
