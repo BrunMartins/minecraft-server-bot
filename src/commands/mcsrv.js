@@ -1,6 +1,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const helpers = require('../helpers.js');
+let { spawn } = require('child_process');
 
 module.exports = {
     name: 'mcsrv',
@@ -304,10 +305,37 @@ module.exports = {
 
         start: (message, args, client) => {
 
+            if(this.minecraftProcess) {
+                message.channel.send('The minecraft server is already running');
+                return;
+            }
+
+            this.minecraftProcess = spawn('du', ['/', '-sh']);
+            
+            this.minecraftProcess.stdout.once('data', () => {
+                console.log('started');
+                message.channel.send('The server has been started successfully by **' + message.author + '**');
+                this.minecraftPStart = new Date();
+            })
+
+            this.minecraftProcess.stdout.on('data', (data) => {
+                
+                console.log(data.toString());
+            });
         },
 
         stop: (message, args, client) => {
+            if(!this.minecraftProcess) {
+                message.channel.send('The minecraft server is not running');
+                return;
+            }
 
+            try {
+                this.minecraftProcess.kill();
+            } catch(err) {
+                return;
+            }
+            message.channel.send('The server has been stopped successfully by **' + message.author + '**');
         },
 
         restart: (message, args, client) => {
@@ -315,13 +343,17 @@ module.exports = {
         },
 
         uptime: (message, args, client) => {
-
+            let dt = new Date((new Date() - this.minecraftPStart));
+            dt = dt.getUTCHours() + 'h:' + dt.getUTCMinutes() + 'm:' + dt.getUTCSeconds() + 's-' + dt.getUTCMilliseconds() + 'ms';
+            message.channel.send('The current server session has been up for ' + dt);
         },
 
         status: (message, args, client) => {
 
         },
     },
+    minecraftProcess: null,
+    minecraftPStart: null,
 
     createLocalConfig() {
         fs.copyFileSync('./defaults.json', './config.json');
