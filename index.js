@@ -93,6 +93,8 @@ client.on('message', message => {
         return;
     }
 
-    // After clearing all the checks, run the subcommand.
+
+    // After clearing all the checks, log and run the subcommand.
+    fs.appendFileSync('./command.log', new Date() + ' - ' + message.author.username + ' executed "' + foundCmd.name + ' ' + subCmd + '"\n');
     foundCmd.commands[subCmd](message, args, client);
 });

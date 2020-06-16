@@ -53,8 +53,15 @@ module.exports = {
 
                 case 'backup':
 
-                    if(!fs.existsSync('../../bak')) {
-                        fs.mkdirSync('../../bak');
+                    if(!fs.existsSync('./bak')) {
+                        try {
+                            fs.mkdirSync('./bak');
+                        } catch(err) {
+                            message.channel.send('There was an error, please contact the bot administrator and relay the information below.\n' + err);
+                            channel = client.channels.find(c => c.id === helpers.config.botCentral);
+                            channel.send(JSON.stringify(err));
+                            return;
+                        }
                     }
                     
                     if (args[1] === 'delete') {
@@ -294,9 +301,9 @@ module.exports = {
 
                     const errorEmbed = new Discord.RichEmbed().setColor('#FF0000');
                     if (args[0] === undefined) {
-                        errorEmbed.setTitle('You must specify an action').addField("Please choose from one of the following:", helpers.onePerLine(helpers.possibleActions), '----------------------');   
+                        errorEmbed.setTitle('You must specify an action').addField("Please choose from one of the following:", helpers.onePerLine(helpers.possibleActions), false);
                     } else {
-                        errorEmbed.setTitle('----------------------\nThe action you specified does not exist.').addField("Please choose from one of the following:\n" + helpers.onePerLine(helpers.possibleActions), '----------------------');
+                        errorEmbed.setTitle('The action you specified does not exist.').addField("Please choose from one of the following:", helpers.onePerLine(helpers.possibleActions), false);
                     }
                     message.channel.send({embed: errorEmbed});
                     break;
